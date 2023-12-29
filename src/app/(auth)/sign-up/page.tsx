@@ -1,8 +1,13 @@
 'use client';
+
+import { useState, useEffect } from 'react';
+import { useDebounce } from 'usehooks-ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import Link from 'next/link';
 import * as z from 'zod';
+import { ApiResponse } from '@/types/ApiResponse';
+
 import {
   Form,
   FormField,
@@ -11,7 +16,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
+import axios, { AxiosError } from 'axios';
 import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 const signUpSchema = z.object({
   username: z
@@ -24,17 +33,75 @@ const signUpSchema = z.object({
 });
 
 export default function SignUpForm() {
+  const [username, setUsername] = useState('');
+  const [isUsernameUnique, setIsUsernameUnique] = useState(null);
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const debouncedUsername = useDebounce(username, 300);
+
+  const router = useRouter();
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
+      username: '',
       email: '',
       password: '',
     },
   });
 
-  const onSubmit = (data: z.infer<typeof signUpSchema>) => {
-    // Handle sign-up logic here
-    console.log(data);
+  useEffect(() => {
+    const checkUsernameUnique = async () => {
+      if (debouncedUsername) {
+        setIsCheckingUsername(true);
+        try {
+          const response = await axios.get(
+            `/api/check-username-unique?username=${debouncedUsername}`
+          );
+          setIsUsernameUnique(response.data.success);
+        } catch (error) {
+          console.error('Error checking username uniqueness:', error);
+        } finally {
+          setIsCheckingUsername(false);
+        }
+      }
+    };
+    checkUsernameUnique();
+  }, [debouncedUsername]);
+
+  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post<ApiResponse>('/api/sign-up', data);
+
+      const { message } = response.data;
+
+      toast({
+        title: 'Success',
+        description: message,
+      });
+
+      router.replace(`/verify/${username}`);
+
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error('Error during sign-up:', error);
+
+      const axiosError = error as AxiosError<ApiResponse>;
+
+      // Default error message
+      let errorMessage = axiosError.response?.data.message;
+      ('There was a problem with your sign-up. Please try again.');
+
+      toast({
+        title: 'Sign Up Failed',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -54,7 +121,29 @@ export default function SignUpForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Username</FormLabel>
-                  <Input {...field} />
+                  <Input
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setUsername(e.target.value);
+                    }}
+                  />
+                  {isCheckingUsername && <Loader2 className="animate-spin" />}
+                  {username.length >= 2 &&
+                    !isCheckingUsername &&
+                    isUsernameUnique !== null && (
+                      <p
+                        className={
+                          isUsernameUnique
+                            ? 'text-sm text-green-500'
+                            : 'text-sm text-red-500'
+                        }
+                      >
+                        {isUsernameUnique
+                          ? 'Username available'
+                          : 'Username is already taken'}
+                      </p>
+                    )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -81,7 +170,16 @@ export default function SignUpForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Sign Up</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                'Sign Up'
+              )}
+            </Button>
           </form>
         </Form>
         <div className="text-center mt-4">

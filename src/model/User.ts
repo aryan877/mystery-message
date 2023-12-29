@@ -22,11 +22,13 @@ export interface User extends Document {
   email: string;
   password: string;
   verifyCode: string;
+  verifyCodeExpiry: Date; 
   isVerified: boolean;
   isAcceptingMessages: boolean;
   messages: Message[];
 }
 
+// Updated User schema
 const UserSchema: Schema<User> = new mongoose.Schema({
   username: {
     type: String,
@@ -47,6 +49,10 @@ const UserSchema: Schema<User> = new mongoose.Schema({
   verifyCode: {
     type: String,
     required: [true, 'Verify Code is required'],
+  },
+  verifyCodeExpiry: {
+    type: Date,
+    required: [true, 'Verify Code Expiry is required'],
   },
   isVerified: {
     type: Boolean,
