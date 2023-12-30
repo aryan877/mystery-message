@@ -76,11 +76,9 @@ function SignUpForm() {
     try {
       const response = await axios.post<ApiResponse>('/api/sign-up', data);
 
-      const { message } = response.data;
-
       toast({
         title: 'Success',
-        description: message,
+        description: response.data.message,
       });
 
       router.replace(`/verify/${username}`);

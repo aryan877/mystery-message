@@ -3,23 +3,24 @@ import 'next-auth';
 declare module 'next-auth' {
   interface Session {
     user: {
+      _id?: string;
       isVerified?: boolean;
       isAcceptingMessages?: boolean;
       username?: string;
     } & DefaultSession['user'];
   }
-    interface User {
-      isVerified?: boolean;
-      isAcceptingMessages?: boolean;
-      username?: string;
-    }
+
+  interface User {
+    _id?: string;
+    isVerified?: boolean;
+    isAcceptingMessages?: boolean;
+    username?: string;
+  }
 }
 
-
 declare module 'next-auth/jwt' {
-  /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
-    /** OpenID ID Token */
+    _id?: string;
     isVerified?: boolean;
     isAcceptingMessages?: boolean;
     username?: string;
