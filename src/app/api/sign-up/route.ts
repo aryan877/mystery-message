@@ -1,6 +1,6 @@
 import dbConnect from '@/lib/dbConnect';
 import UserModel from '@/model/User';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   // Connect to the database
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    
+
     // Check if email is already in use
     const existingUserByEmail = await UserModel.findOne({ email });
     if (existingUserByEmail) {

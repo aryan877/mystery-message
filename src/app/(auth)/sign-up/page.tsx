@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useDebounce } from 'usehooks-ts';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import Link from 'next/link';
-import * as z from 'zod';
 import { ApiResponse } from '@/types/ApiResponse';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDebounce } from 'usehooks-ts';
+import * as z from 'zod';
 
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormField,
@@ -15,11 +16,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import axios, { AxiosError } from 'axios';
 import { Input } from '@/components/ui/input';
-import { Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import axios, { AxiosError } from 'axios';
+import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const signUpSchema = z.object({
