@@ -1,4 +1,5 @@
 'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -15,12 +16,13 @@ import axios, { AxiosError } from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import withPublicAccess from '@/components/hoc/withPublicAccess';
 
 const verifySchema = z.object({
   code: z.string().length(6, 'Verification code must be 6 digits'),
 });
 
-export default function VerifyAccount() {
+function VerifyAccount() {
   const router = useRouter();
   const params = useParams<{ username: string }>();
   const { toast } = useToast();
@@ -82,3 +84,5 @@ export default function VerifyAccount() {
     </div>
   );
 }
+
+export default withPublicAccess(VerifyAccount)

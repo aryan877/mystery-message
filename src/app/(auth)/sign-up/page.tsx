@@ -21,6 +21,7 @@ import { useToast } from '@/components/ui/use-toast';
 import axios, { AxiosError } from 'axios';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import withPublicAccess from '@/components/hoc/withPublicAccess';
 
 const signUpSchema = z.object({
   username: z
@@ -32,7 +33,7 @@ const signUpSchema = z.object({
     .min(6, { message: 'Password must be at least 6 characters' }),
 });
 
-export default function SignUpForm() {
+function SignUpForm() {
   const [username, setUsername] = useState('');
   const [isUsernameUnique, setIsUsernameUnique] = useState(null);
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
@@ -194,3 +195,5 @@ export default function SignUpForm() {
     </div>
   );
 }
+
+export default withPublicAccess(SignUpForm)

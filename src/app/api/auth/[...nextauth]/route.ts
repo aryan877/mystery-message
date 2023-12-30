@@ -6,7 +6,6 @@ import dbConnect from '@/lib/dbConnect';
 import UserModel from '@/model/User';
 
 export const authOptions: NextAuthOptions = {
-  // Configure one or more authentication providers
   providers: [
     CredentialsProvider({
       id: 'credentials',
@@ -19,14 +18,20 @@ export const authOptions: NextAuthOptions = {
         await dbConnect();
         try {
           const user = await UserModel.findOne({ email: credentials.email });
-          if (user) {
-            const isPasswordCorrect = await bcrypt.compare(
-              credentials.password,
-              user.password
-            );
-            if (isPasswordCorrect) {
-              return user;
-            }
+          if (!user) {
+            throw new Error('No user found with this email');
+          }
+          if (!user.isVerified) {
+            throw new Error('Please verify your account before logging in');
+          }
+          const isPasswordCorrect = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
+          if (isPasswordCorrect) {
+            return user;
+          } else {
+            throw new Error('Incorrect password');
           }
         } catch (err: any) {
           throw new Error(err);

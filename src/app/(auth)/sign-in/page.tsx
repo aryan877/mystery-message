@@ -1,4 +1,5 @@
 'use client';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -15,13 +16,14 @@ import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
+import withPublicAccess from '@/components/hoc/withPublicAccess';
 
 const signInSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
   password: z.string(),
 });
 
-export default function SignInForm() {
+function SignInForm() {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -51,7 +53,7 @@ export default function SignInForm() {
       } else {
         toast({
           title: 'Error',
-          description: 'An unexpected error occurred',
+          description: result.error,
           variant: 'destructive',
         });
       }
@@ -110,3 +112,5 @@ export default function SignInForm() {
     </div>
   );
 }
+
+export default withPublicAccess(SignInForm)
