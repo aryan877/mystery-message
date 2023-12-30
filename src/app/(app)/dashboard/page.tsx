@@ -23,6 +23,8 @@ const FormSchema = z.object({
 function UserDashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSwitchLoading, setIsSwitchLoading] = useState(false);
+
   const { toast } = useToast();
 
   const handleDeleteMessage = (messageId: string) => {
@@ -39,6 +41,7 @@ function UserDashboard() {
   const acceptMessages = watch('acceptMessages');
 
   const fetchAcceptMessages = useCallback(async () => {
+    setIsSwitchLoading(true);
     try {
       const response = await axios.get<ApiResponse>('/api/accept-messages');
       setValue('acceptMessages', response.data.isAcceptingMessages);
@@ -51,12 +54,15 @@ function UserDashboard() {
           'Failed to fetch message settings',
         variant: 'destructive',
       });
+    } finally {
+      setIsSwitchLoading(false);
     }
   }, [setValue, toast]);
 
   const fetchMessages = useCallback(
     async (refresh: boolean = false) => {
       setIsLoading(true);
+      setIsSwitchLoading(false);
       try {
         const response = await axios.get<ApiResponse>('/api/get-messages');
         setMessages(response.data.messages || []);
@@ -76,6 +82,7 @@ function UserDashboard() {
         });
       } finally {
         setIsLoading(false);
+        setIsSwitchLoading(false);
       }
     },
     [setIsLoading, setMessages, toast]
@@ -121,7 +128,7 @@ function UserDashboard() {
 
   const baseUrl = `${window.location.protocol}//${window.location.host}`;
   const profileUrl = `${baseUrl}/profile/${username}`;
-  
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileUrl);
     toast({
@@ -152,6 +159,7 @@ function UserDashboard() {
           {...register('acceptMessages')}
           checked={acceptMessages}
           onCheckedChange={handleSwitchChange}
+          disabled={isSwitchLoading}
         />
         <span className="ml-2">
           Accept Messages: {acceptMessages ? 'On' : 'Off'}
