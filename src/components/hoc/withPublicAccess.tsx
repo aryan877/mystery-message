@@ -1,13 +1,13 @@
 'use client';
 
 import React, { ComponentType, useEffect } from 'react';
-import { useSession, SessionProviderProps } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 const withPublicAccess = <P extends object>(
   WrappedComponent: ComponentType<P>
 ) => {
-  const WithPublicAccess: ComponentType<P & SessionProviderProps> = (props) => {
+  const WithPublicAccess: ComponentType<P> = (props) => {
     const router = useRouter();
     const { status } = useSession();
 
