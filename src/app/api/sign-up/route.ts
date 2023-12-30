@@ -75,6 +75,8 @@ export async function POST(request: Request) {
     // Save the new user to the database
     await newUser.save()
 
+    // Send verification code here to user's email ( valid for 1 hour )
+
     // Send a success response
     return Response.json(
       {
