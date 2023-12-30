@@ -26,7 +26,9 @@ import withPublicAccess from '@/components/hoc/withPublicAccess';
 const signUpSchema = z.object({
   username: z
     .string()
-    .min(2, { message: 'Username must be at least 2 characters' }),
+    .min(2, { message: 'Username must be at least 2 characters' })
+    .max(20, { message: 'Username must be no more than 20 characters' }) // Limiting the length
+    .regex(/^[a-zA-Z0-9_]+$/, { message: 'Username must not contain special characters' }), // Regex for no special characters
   email: z.string().email({ message: 'Invalid email address' }),
   password: z
     .string()
