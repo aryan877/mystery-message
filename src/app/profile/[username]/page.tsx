@@ -72,6 +72,7 @@ export default function SendMessage() {
         title: response.data.message,
         variant: 'default',
       });
+      form.reset();
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
