@@ -21,13 +21,7 @@ import * as z from 'zod';
 import { ApiResponse } from '@/types/ApiResponse';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-
-const messageSchema = z.object({
-  content: z
-    .string()
-    .min(10, { message: 'Content must be at least 10 characters.' })
-    .max(300, { message: 'Content must not be longer than 300 characters.' }),
-});
+import { messageSchema } from '@/schemas/messageSchema';
 
 export default function SendMessage() {
   const params = useParams<{ username: string }>();

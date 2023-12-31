@@ -17,10 +17,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import withPublicAccess from '@/components/hoc/withPublicAccess';
-
-const verifySchema = z.object({
-  code: z.string().length(6, 'Verification code must be 6 digits'),
-});
+import { verifySchema } from '@/schemas/verifySchema';
 
 function VerifyAccount() {
   const router = useRouter();

@@ -17,11 +17,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 import withPublicAccess from '@/components/hoc/withPublicAccess';
-
-const signInSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address' }),
-  password: z.string(),
-});
+import { signInSchema } from '@/schemas/signInSchema';
 
 function SignInForm() {
   const router = useRouter();

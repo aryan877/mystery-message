@@ -22,22 +22,11 @@ import axios, { AxiosError } from 'axios';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import withPublicAccess from '@/components/hoc/withPublicAccess';
-
-const signUpSchema = z.object({
-  username: z
-    .string()
-    .min(2, { message: 'Username must be at least 2 characters' })
-    .max(20, { message: 'Username must be no more than 20 characters' }) // Limiting the length
-    .regex(/^[a-zA-Z0-9_]+$/, { message: 'Username must not contain special characters' }), // Regex for no special characters
-  email: z.string().email({ message: 'Invalid email address' }),
-  password: z
-    .string()
-    .min(6, { message: 'Password must be at least 6 characters' }),
-});
+import { signUpSchema } from '@/schemas/signUpSchema';
 
 function SignUpForm() {
   const [username, setUsername] = useState('');
-  const [isUsernameUnique, setIsUsernameUnique] = useState(null);
+  const [usernameMessage, setUsernameMessage] = useState('');
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const debouncedUsername = useDebounce(username, 300);
@@ -58,13 +47,17 @@ function SignUpForm() {
     const checkUsernameUnique = async () => {
       if (debouncedUsername) {
         setIsCheckingUsername(true);
+        setUsernameMessage(''); // Reset message
         try {
-          const response = await axios.get(
+          const response = await axios.get<ApiResponse>(
             `/api/check-username-unique?username=${debouncedUsername}`
           );
-          setIsUsernameUnique(response.data.success);
+          setUsernameMessage(response.data.message);
         } catch (error) {
-          console.error('Error checking username uniqueness:', error);
+          const axiosError = error as AxiosError<ApiResponse>;
+          setUsernameMessage(
+            axiosError.response?.data.message ?? 'Error checking username'
+          );
         } finally {
           setIsCheckingUsername(false);
         }
@@ -141,21 +134,17 @@ function SignUpForm() {
                     }}
                   />
                   {isCheckingUsername && <Loader2 className="animate-spin" />}
-                  {username.length >= 2 &&
-                    !isCheckingUsername &&
-                    isUsernameUnique !== null && (
-                      <p
-                        className={
-                          isUsernameUnique
-                            ? 'text-sm text-green-500'
-                            : 'text-sm text-red-500'
-                        }
-                      >
-                        {isUsernameUnique
-                          ? 'Username available'
-                          : 'Username is already taken'}
-                      </p>
-                    )}
+                  {!isCheckingUsername && usernameMessage && (
+                    <p
+                      className={`text-sm ${
+                        usernameMessage === 'Username is unique'
+                          ? 'text-green-500'
+                          : 'text-red-500'
+                      }`}
+                    >
+                      {usernameMessage}
+                    </p>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -196,4 +185,4 @@ function SignUpForm() {
   );
 }
 
-export default withPublicAccess(SignUpForm)
+export default withPublicAccess(SignUpForm);

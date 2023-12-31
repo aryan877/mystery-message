@@ -1,24 +1,20 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
-import { User } from 'next-auth';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
-import axios, { AxiosError } from 'axios';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { ApiResponse } from '@/types/ApiResponse';
 import { MessageCard } from '@/components/MessageCard';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/components/ui/use-toast';
 import { Message } from '@/model/User';
+import { ApiResponse } from '@/types/ApiResponse';
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios, { AxiosError } from 'axios';
 import { Loader2, RefreshCcw } from 'lucide-react';
-
-const FormSchema = z.object({
-  acceptMessages: z.boolean(),
-});
+import { User } from 'next-auth';
+import { useSession } from 'next-auth/react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { AcceptMessageSchema } from '@/schemas/acceptMessageSchema';
 
 function UserDashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -34,7 +30,7 @@ function UserDashboard() {
   const { data: session } = useSession();
 
   const form = useForm({
-    resolver: zodResolver(FormSchema),
+    resolver: zodResolver(AcceptMessageSchema),
   });
 
   const { register, watch, setValue } = form;
