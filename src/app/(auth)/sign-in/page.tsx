@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import {
   Form,
   FormField,
@@ -25,17 +25,16 @@ function SignInForm() {
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: '',
+      identifier: '',
       password: '',
     },
   });
 
   const { toast } = useToast();
-
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     const result = await signIn('credentials', {
       redirect: false,
-      email: data.email,
+      identifier: data.identifier,
       password: data.password,
     });
 
@@ -72,11 +71,11 @@ function SignInForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
-              name="email"
+              name="identifier"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Email/Username</FormLabel>
                   <Input {...field} />
                   <FormMessage />
                 </FormItem>
@@ -109,4 +108,4 @@ function SignInForm() {
   );
 }
 
-export default withPublicAccess(SignInForm)
+export default withPublicAccess(SignInForm);
