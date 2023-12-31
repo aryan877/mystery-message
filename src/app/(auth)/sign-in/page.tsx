@@ -16,10 +16,9 @@ import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
-import withPublicAccess from '@/components/hoc/withPublicAccess';
 import { signInSchema } from '@/schemas/signInSchema';
 
-function SignInForm() {
+export default function SignInForm() {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -107,5 +106,3 @@ function SignInForm() {
     </div>
   );
 }
-
-export default withPublicAccess(SignInForm);

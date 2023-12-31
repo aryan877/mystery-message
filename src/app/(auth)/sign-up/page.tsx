@@ -21,10 +21,9 @@ import { useToast } from '@/components/ui/use-toast';
 import axios, { AxiosError } from 'axios';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import withPublicAccess from '@/components/hoc/withPublicAccess';
 import { signUpSchema } from '@/schemas/signUpSchema';
 
-function SignUpForm() {
+export default function SignUpForm() {
   const [username, setUsername] = useState('');
   const [usernameMessage, setUsernameMessage] = useState('');
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
@@ -186,4 +185,3 @@ function SignUpForm() {
   );
 }
 
-export default withPublicAccess(SignUpForm);

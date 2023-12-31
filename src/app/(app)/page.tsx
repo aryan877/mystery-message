@@ -15,9 +15,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import withPublicAccess from '@/components/hoc/withPublicAccess';
 
-function Home() {
+export default function Home() {
   return (
     <>
       {/* Main content */}
@@ -66,5 +65,3 @@ function Home() {
     </>
   );
 }
-
-export default withPublicAccess(Home)

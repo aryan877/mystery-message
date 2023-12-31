@@ -16,10 +16,9 @@ import axios, { AxiosError } from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import withPublicAccess from '@/components/hoc/withPublicAccess';
 import { verifySchema } from '@/schemas/verifySchema';
 
-function VerifyAccount() {
+export default function VerifyAccount() {
   const router = useRouter();
   const params = useParams<{ username: string }>();
   const { toast } = useToast();
@@ -81,5 +80,3 @@ function VerifyAccount() {
     </div>
   );
 }
-
-export default withPublicAccess(VerifyAccount)
